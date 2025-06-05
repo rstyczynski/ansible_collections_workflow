@@ -1,0 +1,25 @@
+jobs:
+  ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute Ansible collections hash
+        id: collections-hash
+        run: |
+          COLLECTIONS_DIR="$PWD/collections"
+          HASH_FILE="$COLLECTIONS_DIR/ansible_collections.hash"
+          CURRENT_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
+          echo "$CURRENT_HASH" > "$HASH_FILE"
+          echo "hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
+
+      - name: Cache collections
+        uses: actions/cache@v4
+        with:
+          path: collections
+          key: collections-${{ steps.collections-hash.outputs.hash }}
+
+      - name: Install collections if needed
+        run: |
+          # Use same install logic as in README
+          source ./install_collections.sh
