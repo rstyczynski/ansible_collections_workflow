@@ -25,5 +25,19 @@ jobs:
 
       - name: Install collections if needed
         run: |
-          # Use same install logic as in README
-          source ./.github/workflows/bin/install_collections.sh
+          COLLECTIONS_DIR="$PWD/collections"
+          HASH_FILE="$COLLECTIONS_DIR/ansible_collections.hash"
+
+          # Compute current hash excluding the hash file itself
+          CURRENT_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
+
+          if [ ! -f "$HASH_FILE" ] || [ "$CURRENT_HASH" != "$(cat "$HASH_FILE")" ]; then
+            echo "Installing collections (hash mismatch or missing)..."
+            ansible-galaxy collection install -r "$PWD/requirements.yml" --collections-path "$COLLECTIONS_DIR" --force
+
+            # Recompute hash *after* install
+            UPDATED_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
+            echo "$UPDATED_HASH" > "$HASH_FILE"
+          else
+            echo "Collections are up to date. Skipping installation."
+          fi
