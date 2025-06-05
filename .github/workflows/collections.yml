@@ -26,4 +26,4 @@ jobs:
       - name: Install collections if needed
         run: |
           # Use same install logic as in README
-          source ./github/workflow/bin/install_collections.sh
+          source ./.github/workflow/bin/install_collections.sh
