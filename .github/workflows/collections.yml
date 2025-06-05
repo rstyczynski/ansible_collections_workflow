@@ -4,47 +4,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  ansible:
+  config:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Write OCI config and key
-        env:
-          OCI_CONFIG_BASE64: ${{ secrets.OCI_CONFIG_BASE64 }}
-          OCI_API_KEY_BASE64: ${{ secrets.OCI_API_KEY_BASE64 }}
-        run: |
-          mkdir -p ~/.oci
-          if [ -n "$OCI_CONFIG_BASE64" ] && [ -n "$OCI_API_KEY_BASE64" ]; then
-            echo "$OCI_CONFIG_BASE64"  | base64 -d | grep -v key_file > ~/.oci/config
-            echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
-
-            echo "$OCI_API_KEY_BASE64" | base64 -d > ~/.oci/oci_api_key.pem
-            chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
-
-            echo ~/.oci/config
-            echo ==============
-            cat ~/.oci/config
-            echo ls -l ~/.oci/oci_api_key.pem
-            echo ==============
-            ls -l ~/.oci/oci_api_key.pem
-          else
-            cat << EOF
-          Error! GitHub Secrets are empty! 
-          Use GitHub repo Settings/Security/Secrets and variables/Repository secrets
-          to define OCI_CONFIG_BASE64, and OCI_API_KEY_BASE64.
-
-          Generate values from your ~/.oci/config using provided script:
-          ./.github/workflows/oci_config2secrets.sh
-          EOF
-          exit 1
-          fi
-
-      - name: Cache externals
-        uses: actions/cache@v4
-        with:
-          path: external
-          key: external-${{ hashFiles('./external/requirements.yml', './external/requirements.txt') }}
 
       - name: Set up Python virtualenv
         run: |
@@ -71,6 +34,49 @@ jobs:
           else
             echo "Ansible requirements.yml not found. Skipping collections download."
           fi
+
+  execute:
+    needs: config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Write OCI config and key
+        env:
+          OCI_CONFIG_BASE64: ${{ secrets.OCI_CONFIG_BASE64 }}
+          OCI_API_KEY_BASE64: ${{ secrets.OCI_API_KEY_BASE64 }}
+        run: |
+          mkdir -p ~/.oci
+          if [ -n "$OCI_CONFIG_BASE64" ] && [ -n "$OCI_API_KEY_BASE64" ]; then
+            echo "$OCI_CONFIG_BASE64"  | base64 -d | grep -v key_file > ~/.oci/config
+            echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
+
+            echo "$OCI_API_KEY_BASE64" | base64 -d > ~/.oci/oci_api_key.pem
+            chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
+
+            echo ~/.oci/config
+            echo ==============
+            cat ~/.oci/config
+            echo ls -l ~/.oci/oci_api_key.pem
+            echo ==============
+            ls -l ~/.oci/oci_api_key.pem
+          else
+            cat << EOF
+          ❌ Error! GitHub Secrets are empty! 
+          Use GitHub repo Settings/Security/Secrets and variables/Repository secrets
+          to define OCI_CONFIG_BASE64, and OCI_API_KEY_BASE64.
+
+          Generate values from your ~/.oci/config using provided script:
+          ./.github/workflows/oci_config2secrets.sh
+          EOF
+          exit 1
+          fi
+
+      - name: Cache externals
+        uses: actions/cache@v4
+        with:
+          path: external
+          key: external-${{ hashFiles('./external/requirements.yml', './external/requirements.txt') }}
 
       - name: Run playbook (example)
         run: |
