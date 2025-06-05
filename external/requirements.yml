@@ -1,6 +1,4 @@
 ---
 collections:
   - name: oracle.oci
-  - name: fortinet.fortimanager
 roles:
-  - name: geerlingguy.apache
