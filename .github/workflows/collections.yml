@@ -13,6 +13,19 @@ jobs:
           path: collections
           key: collections-${{ hashFiles('requirements.yml') }}
 
+      - name: Install roles
+        run: |
+          if [ -f requirements.yml ]; then
+            ansible-galaxy role install -r requirements.yml -p ./roles
+          else
+            Ansible requirements.yml not found. Skipping roles download.
+          fi
+
       - name: Install collections
         run: |
-          ansible-galaxy collection install -r requirements.yml --collections-path collections
+          if [ -f requirements.yml ]; then
+            ansible-galaxy collection install -r requirements.yml --collections-path ./collections
+            ansible-galaxy role install -r requirements.yml -p ./roles
+          else
+            Ansible requirements.yml not found. Skipping collections download. 
+          fi
