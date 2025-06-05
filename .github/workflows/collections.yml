@@ -39,8 +39,21 @@ jobs:
             echo "Ansible requirements.yml not found. Skipping collections download."
           fi
 
+      - name: Write OCI config and key
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG_CONTENTS }}" > ~/.oci/config
+          echo "${{ secrets.OCI_API_KEY_BASE64 }}" | base64 -d > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
+
       - name: Run playbook (example)
         run: |
           source "./external/python/venv/bin/activate"
           export ANSIBLE_COLLECTIONS_PATH=./external/collections
           ansible-playbook greetings.yml
+
+      - name: Run playbook (OCI example)
+        run: |
+          source "./external/python/venv/bin/activate"
+          export ANSIBLE_COLLECTIONS_PATH=./external/collections
+          ansible-playbook get_namespace.yml
