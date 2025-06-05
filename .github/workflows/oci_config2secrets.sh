@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SECTION="DEFAULT"
+SECTION="${1:-DEFAULT}"
 
 function get_config() {
     local SECTION=$1
