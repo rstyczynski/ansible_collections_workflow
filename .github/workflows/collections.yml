@@ -16,13 +16,17 @@ jobs:
         run: |
           mkdir -p ~/.oci
           if [ -n "$OCI_CONFIG_BASE64" ] && [ -n "$OCI_API_KEY_BASE64" ]; then
-            echo "$OCI_CONFIG_BASE64"  | base64 -d \
-            | sed "s|^key_file=.*|key_file=~/.oci/oci_api_key.pem|" > ~/.oci/config
+            echo "$OCI_CONFIG_BASE64"  | base64 -d | grep -v key_file > ~/.oci/config
+            echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
 
             echo "$OCI_API_KEY_BASE64" | base64 -d > ~/.oci/oci_api_key.pem
             chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
 
+            echo ~/.oci/config
+            echo ==============
             cat ~/.oci/config
+            echo ls -l ~/.oci/oci_api_key.pem
+            echo ==============
             ls -l ~/.oci/oci_api_key.pem
           else
             cat << EOF
