@@ -1,0 +1,15 @@
+---
+- name: Run with variables from Terraform
+  hosts: localhost
+  gather_facts: false
+  vars:
+    fallback_message: "No greeting provided"
+
+  tasks:
+    - name: Print greeting from Terraform output
+      debug:
+        msg: "{{ greeting | default(fallback_message) }}"
+
+    - name: Show all received variables
+      debug:
+        var: vars

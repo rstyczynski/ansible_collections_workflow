@@ -43,4 +43,4 @@ jobs:
         run: |
           source "./external/python/venv/bin/activate"
           export ANSIBLE_COLLECTIONS_PATH=./external/collections
-          ansible-playbook get_namespace.yml
+          ansible-playbook greetings.yml
