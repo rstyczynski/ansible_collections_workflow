@@ -30,6 +30,7 @@ jobs:
           Generate values from your ~/.oci/config using provided script:
           ./.github/workflows/oci_config2secrets.sh
           EOF
+          exit 1
           fi
 
       - name: Cache externals
