@@ -9,6 +9,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache externals
+        uses: actions/cache@v4
+        with:
+          path: external
+          key: external-${{ hashFiles('./external/requirements.yml', './external/requirements.txt') }}
+
       - name: Set up Python virtualenv
         run: |
           PYTHON_VENV="./external/python/venv"
