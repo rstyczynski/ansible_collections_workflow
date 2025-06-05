@@ -9,6 +9,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Write OCI config and key
+        run: |
+          mkdir -p ~/.oci
+          if [ "${{ secrets.OCI_CONFIG_BASE64 }}" != '' ] || [ "${{ secrets.OCI_API_KEY_BASE64 }}" != '' ]; then
+            echo "${{ secrets.OCI_CONFIG_BASE64 }}"  | base64 -d > ~/.oci/config
+            echo "${{ secrets.OCI_API_KEY_BASE64 }}" | base64 -d > ~/.oci/oci_api_key.pem
+            chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
+            cat ~/.oci/config
+            ls -l ~/.oci/oci_api_key.pem
+          else
+            cat << EOF
+          Error! GitHub Secrets are empty! 
+          Use GitHub repo Settings/Security/Secrets and variables/Repository secrets
+          to define OCI_CONFIG_BASE64, and OCI_API_KEY_BASE64.
+
+          Generate values from your ~/.oci/config using provided script:
+          ./.github/workflows/oci_config2secrets.sh
+          EOF
+          fi
+
       - name: Cache externals
         uses: actions/cache@v4
         with:
@@ -39,25 +59,6 @@ jobs:
             ansible-galaxy collection install -r ./external/requirements.yml --collections-path ./external/collections
           else
             echo "Ansible requirements.yml not found. Skipping collections download."
-          fi
-
-      - name: Write OCI config and key
-        run: |
-          mkdir -p ~/.oci
-          if [ "${{ secrets.OCI_CONFIG_BASE64 }}" != '' ] || [ "${{ secrets.OCI_API_KEY_BASE64 }}" != '' ]; then
-            echo "${{ secrets.OCI_CONFIG_BASE64 }}"  | base64 -d > ~/.oci/config
-            echo "${{ secrets.OCI_API_KEY_BASE64 }}" | base64 -d > ~/.oci/oci_api_key.pem
-            chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
-            cat ~/.oci/config
-            ls -l ~/.oci/oci_api_key.pem
-          else
-            cat << EOF
-            Error! GitHub Secrets are empty! 
-            Use GitHub repo Settings/Security/Secrets and variables/Repository secrets
-            to define OCI_CONFIG_BASE64, and OCI_API_KEY_BASE64.
-
-            Generate values from your ~/.oci/config using provided script:
-            ./.github/workflows/oci_config2secrets.sh
           fi
 
       - name: Run playbook (example)
