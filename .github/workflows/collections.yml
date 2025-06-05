@@ -24,7 +24,7 @@ jobs:
 
       - name: Get Python version
         id: python_version
-        run: echo "python_version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> $GITHUB_OUTPUT
+        run: echo "python_version=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" >> $GITHUB_OUTPUT
 
       - name: Cache Python venv
         uses: actions/cache@v4
@@ -103,7 +103,7 @@ jobs:
 
       - name: Get Python version
         id: python_version
-        run: echo "python_version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> $GITHUB_OUTPUT
+        run: echo "python_version=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" >> $GITHUB_OUTPUT
 
       - name: Cache Python venv
         uses: actions/cache@v4
@@ -114,11 +114,11 @@ jobs:
       - name: Run playbook (example)
         run: |
           source "./external/python/venv/bin/activate"
-          export ANSIBLE_COLLECTIONS_PATH=./external/collections
+          export ANSIBLE_COLLECTIONS_PATH=./external/ansible/collections
           ansible-playbook greetings.yml
 
       - name: Run playbook (OCI example)
         run: |
           source "./external/python/venv/bin/activate"
-          export ANSIBLE_COLLECTIONS_PATH=./external/collections
+          export ANSIBLE_COLLECTIONS_PATH=./external/ansible/collections
           ansible-playbook get_namespace.yml
