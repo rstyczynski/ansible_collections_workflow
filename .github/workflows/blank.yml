@@ -11,6 +11,7 @@ jobs:
         id: collections-hash
         run: |
           COLLECTIONS_DIR="$PWD/collections"
+          mkdir -p "$COLLECTIONS_DIR"
           HASH_FILE="$COLLECTIONS_DIR/ansible_collections.hash"
           CURRENT_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
           echo "$CURRENT_HASH" > "$HASH_FILE"
