@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            external/requirements.yml
+            external/requirements.txt
+          sparse-checkout-cone-mode: false
 
       - name: Cache externals
         uses: actions/cache@v4
