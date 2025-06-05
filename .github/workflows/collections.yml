@@ -11,10 +11,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: collections
-          key: collections-${{ steps.collections_install.outputs.hash }}
+          key: collections-${{ steps.collections_install.outputs.collections_hash }}
 
       - name: Install collections if needed
         id: collections_install
         run: |
           source .github/workflows/bin/install_collections.sh 
-          echo "hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
+          echo "collections_hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
