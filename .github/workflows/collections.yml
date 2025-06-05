@@ -16,5 +16,5 @@ jobs:
       - name: Install collections if needed
         id: collections_install
         run: |
-          . 
+          source .github/workflows/bin/install_collections.sh 
           echo "hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
