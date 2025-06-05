@@ -38,3 +38,9 @@ jobs:
           else
             echo "Ansible requirements.yml not found. Skipping collections download."
           fi
+
+      - name: Run playbook (example)
+        run: |
+          source "./external/python/venv/bin/activate"
+          export ANSIBLE_COLLECTIONS_PATH=./external/collections
+          ansible-playbook get_namespace.yml
