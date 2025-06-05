@@ -14,11 +14,23 @@ jobs:
             external/requirements.txt
           sparse-checkout-cone-mode: false
 
-      - name: Cache externals
+      - uses: actions/checkout@v4
+
+      - name: Cache Ansible collections, roles
         uses: actions/cache@v4
         with:
-          path: external
-          key: external-${{ hashFiles('./external/requirements.yml', './external/requirements.txt') }}
+          path: external/ansible
+          key: external-ansible-${{ runner.os }}-${{ hashFiles('./external/requirements.yml') }}
+
+      - name: Get Python version
+        id: python_version
+        run: echo "python_version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> $GITHUB_OUTPUT
+
+      - name: Cache Python venv
+        uses: actions/cache@v4
+        with:
+          path: external/python
+          key: python-venv-${{ runner.os }}-${{ steps.pyversion.outputs.version }}-${{ hashFiles('./external/requirements.txt') }}
 
       - name: Set up Python virtualenv
         run: |
@@ -31,8 +43,8 @@ jobs:
       - name: Install roles
         run: |
           if [ -f ./external/requirements.yml ]; then
-            mkdir -p ./external
-            ansible-galaxy role install -r ./external/requirements.yml -p ./external/roles
+            mkdir -p ./external/ansible
+            ansible-galaxy role install -r ./external/requirements.yml -p ./external/ansible/roles
           else
             echo "Ansible requirements.yml not found. Skipping roles download."
           fi
@@ -40,8 +52,8 @@ jobs:
       - name: Install collections
         run: |
           if [ -f ./external/requirements.yml ]; then
-            mkdir -p ./external
-            ansible-galaxy collection install -r ./external/requirements.yml --collections-path ./external/collections
+            mkdir -p ./external/ansible
+            ansible-galaxy collection install -r ./external/requirements.yml --collections-path ./external/ansible/collections
           else
             echo "Ansible requirements.yml not found. Skipping collections download."
           fi
@@ -83,11 +95,21 @@ jobs:
           exit 1
           fi
 
-      - name: Cache externals
+      - name: Cache Ansible collections, roles
         uses: actions/cache@v4
         with:
-          path: external
-          key: external-${{ hashFiles('./external/requirements.yml', './external/requirements.txt') }}
+          path: external/ansible
+          key: external-ansible-${{ runner.os }}-${{ hashFiles('./external/requirements.yml') }}
+
+      - name: Get Python version
+        id: python_version
+        run: echo "python_version=$(python3 -c 'import sys; print(f\"{sys.version_info.major}.{sys.version_info.minor}\")')" >> $GITHUB_OUTPUT
+
+      - name: Cache Python venv
+        uses: actions/cache@v4
+        with:
+          path: external/python
+          key: python-venv-${{ runner.os }}-${{ steps.pyversion.outputs.version }}-${{ hashFiles('./external/requirements.txt') }}
 
       - name: Run playbook (example)
         run: |
