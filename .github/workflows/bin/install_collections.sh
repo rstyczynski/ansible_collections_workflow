@@ -14,7 +14,7 @@ CURRENT_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")
 
 if [ ! -f "$HASH_FILE" ] || [ "$CURRENT_HASH" != "$(cat "$HASH_FILE")" ]; then
   echo "Installing collections (hash mismatch or missing)..."
-  ansible-galaxy collection install -r "$COLLECTIONS_DIR/requirements.yml" --collections-path "$COLLECTIONS_DIR" --force
+  ansible-galaxy collection install -r "$PWD/requirements.yml" --collections-path "$COLLECTIONS_DIR" --force
 
   # Recompute hash *after* install
   UPDATED_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
