@@ -44,9 +44,7 @@ jobs:
       - name: Write OCI config and key
         run: |
           mkdir -p ~/.oci
-          cat <<EOF > ~/.oci/config
-          ${{ secrets.OCI_CONFIG }}
-          EOF
+          echo "${{ secrets.OCI_CONFIG_BASE64 }}"  | base64 -d > ~/.oci/config
           echo "${{ secrets.OCI_API_KEY_BASE64 }}" | base64 -d > ~/.oci/oci_api_key.pem
           chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
           cat ~/.oci/config
