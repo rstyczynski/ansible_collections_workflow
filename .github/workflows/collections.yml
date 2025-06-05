@@ -1,3 +1,5 @@
+name: Ansible Collections → OCI
+
 on:
   workflow_dispatch:
 
