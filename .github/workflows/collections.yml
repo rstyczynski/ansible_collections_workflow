@@ -7,23 +7,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compute Ansible collections hash
-        id: collections-hash
-        run: |
-          COLLECTIONS_DIR="$PWD/collections"
-          mkdir -p "$COLLECTIONS_DIR"
-          HASH_FILE="$COLLECTIONS_DIR/ansible_collections.hash"
-          CURRENT_HASH=$(find "$COLLECTIONS_DIR" -type f ! -name "$(basename "$HASH_FILE")" | sort | xargs sha256sum | sha256sum | cut -f1 -d' ')
-          echo "$CURRENT_HASH" > "$HASH_FILE"
-          echo "hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
-
       - name: Cache collections
         uses: actions/cache@v4
         with:
           path: collections
-          key: collections-${{ steps.collections-hash.outputs.hash }}
+          key: collections-${{ steps.collections_install.outputs.hash }}
 
       - name: Install collections if needed
+        id: collections_install
         run: |
           COLLECTIONS_DIR="$PWD/collections"
           HASH_FILE="$COLLECTIONS_DIR/ansible_collections.hash"
@@ -41,3 +32,4 @@ jobs:
           else
             echo "Collections are up to date. Skipping installation."
           fi
+          echo "hash=$CURRENT_HASH" >> $GITHUB_OUTPUT
