@@ -13,6 +13,12 @@ jobs:
           path: collections
           key: collections-${{ hashFiles('requirements.yml') }}
 
+      - name: Cache roles
+        uses: actions/cache@v4
+        with:
+          path: roles
+          key: roles-${{ hashFiles('requirements.yml') }}
+
       - name: Install roles
         run: |
           if [ -f requirements.yml ]; then
