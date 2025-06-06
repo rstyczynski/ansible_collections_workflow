@@ -10,11 +10,11 @@ function get_config() {
 echo 
 echo OCI_CONFIG_BASE64
 echo ==================
-get_config $SECTION | grep -v key_file= | base64
+get_config "$SECTION" | grep -v key_file= | base64
 
 echo
 echo OCI_API_KEY_BASE64
 echo ==================
-key_file=$(get_config $SECTION | grep key_file= | cut -d= -f2)
-base64 -i $key_file
+key_file=$(get_config "$SECTION" | grep key_file= | cut -d= -f2)
+base64 -i "$key_file"
 
