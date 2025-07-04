@@ -14,8 +14,6 @@ jobs:
             external/requirements.txt
           sparse-checkout-cone-mode: false
 
-      - uses: actions/checkout@v4
-
       - name: Cache Ansible collections, roles
         uses: actions/cache@v4
         with:
